@@ -159,7 +159,7 @@ OVERALL_MEANS = {s: df[col].mean() for s, col in SECTOR_COLS.items()}
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown('<div class="sidebar-section">Macro Condition Filters</div>', unsafe_allow_html=True)
+    st.markdown("### Macro Condition Filters")
     st.caption("Select one or more conditions to filter historical periods. Leave all unchecked to view all data.")
 
     st.markdown("**Inflation Level**")
@@ -227,11 +227,11 @@ if any_filter:
 else:
     label = f"Showing all {n_total} months — use the sidebar to filter by macro condition"
 
-st.markdown(f'<div style="margin-bottom:1.2rem"><span class="match-count">📅 {label}</span></div>', unsafe_allow_html=True)
+st.info(f"📅 {label}")
 
 # ── Main content ──────────────────────────────────────────────────────────────
 if n_match == 0:
-    st.markdown('<div class="no-data-box">⚠️ No historical periods match all selected conditions simultaneously. Try removing one or more filters.</div>', unsafe_allow_html=True)
+    st.error("⚠️ No historical periods match all selected conditions simultaneously. Try removing one or more filters.")
 else:
     # ── Time series charts ────────────────────────────────────────────────────
     st.markdown("### Sales Over Time — Matching Periods Highlighted")
@@ -286,7 +286,7 @@ else:
         )
 
         if sector == 'Electronics':
-            st.markdown('<div class="electronics-note">⚡ <strong>Electronics note:</strong> This sector showed weak correlation with the macro variables used in this analysis. Patterns here are less consistent and should be interpreted with caution.</div>', unsafe_allow_html=True)
+            st.warning("⚡ **Electronics note:** This sector showed weak correlation with the macro variables used in this analysis. Patterns here are less consistent and should be interpreted with caution.")
 
         st.plotly_chart(fig, use_container_width=True)
 
@@ -369,14 +369,9 @@ else:
     st.markdown("### What This Means")
 
     if not any_filter:
-        st.markdown("""
-        <div class="insight-box">
-        Use the sidebar to select macro conditions — for example, "High Inflation" and "Rising" Fed Funds Rate —
-        to see how each retail sector performed historically during similar environments.
-        The app will highlight matching periods on the charts and calculate how average sales
-        compared to the long-run historical average.
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("""Use the sidebar to select macro conditions — for example, High Inflation and Rising Fed Funds Rate —
+to see how each retail sector performed historically during similar environments.
+The app will highlight matching periods on the charts and calculate how average sales compared to the long-run historical average.""")
     elif n_match == 0:
         pass
     else:
@@ -399,12 +394,11 @@ else:
         if selected_fed: condition_desc.append(f"{' / '.join(selected_fed)} Fed Funds Rate")
         if selected_conf: condition_desc.append(f"{' / '.join(selected_conf)} consumer confidence")
 
-        st.markdown(f"""
-        <div class="insight-box">
-        <strong>During periods of {', '.join(condition_desc)} ({n_match} months historically):</strong><br><br>
-        {'<br>'.join(f'• {i}' for i in insights)}
-        </div>
-        """, unsafe_allow_html=True)
+        insight_text = f"**During periods of {', '.join(condition_desc)} ({n_match} months historically):**\n\n"
+        for ins in insights:
+            clean = ins.replace('<b>', '**').replace('</b>', '**')
+            insight_text += f"- {clean}\n"
+        st.info(insight_text)
 
     # ── Next Steps ────────────────────────────────────────────────────────────
     with st.expander("📌 Research Context & Next Steps"):
